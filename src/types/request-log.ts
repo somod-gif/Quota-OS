@@ -1,0 +1,21 @@
+export type RequestLog = {
+  id: string;
+  project_id: string;
+  endpoint_id: string | null;
+  api_key_id: string | null;
+  method: string;
+  path: string;
+  status_code: number | null;
+  latency_ms: number | null;
+  ip_address: string | null;
+  user_agent: string | null;
+  blocked: boolean;
+  rate_limited: boolean;
+  cached: boolean;
+  error: string | null;
+  request_headers: Record<string, string> | null;
+  response_headers: Record<string, string> | null;
+  request_body_size: number | null;
+  response_body_size: number | null;
+  created_at: string;
+};

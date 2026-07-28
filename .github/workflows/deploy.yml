@@ -1,0 +1,23 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          PROVIDER_ENCRYPTION_KEY: ${{ secrets.PROVIDER_ENCRYPTION_KEY }}
+      - uses: vercel/actions/deploy@v1
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
