@@ -2,11 +2,11 @@ export const siteConfig = {
   name: "QuotaOS",
   description:
     "The AI-Native Control Plane for External APIs. Manage authentication, rate limiting, quotas, and analytics from one unified dashboard.",
-  url: "https://quotaos.com",
-  ogImage: "https://quotaos.com/og.png",
+  url: process.env.NEXT_PUBLIC_APP_URL ?? "https://quota-os-ten.vercel.app",
+  ogImage: `${process.env.NEXT_PUBLIC_APP_URL ?? "https://quota-os-ten.vercel.app"}/og.png`,
   links: {
     twitter: "https://twitter.com/quotaos",
-    github: "https://github.com/quotaos/quotaos",
+    github: "https://github.com/somod-gif/Quota-OS",
   },
 } as const;
 

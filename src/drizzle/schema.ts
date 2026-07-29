@@ -7,7 +7,6 @@ import {
   boolean,
   jsonb,
   varchar,
-  primaryKey,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
 
@@ -31,7 +30,7 @@ export const workspace_members = pgTable(
     created_at: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   },
   (table) => ({
-    uniqueMembership: primaryKey({ columns: [table.workspace_id, table.user_id] }),
+    uniqueMembership: uniqueIndex("unique_membership").on(table.workspace_id, table.user_id),
   }),
 );
 

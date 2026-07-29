@@ -3,6 +3,9 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { env } from "@/config/env";
+
+const appUrl = env.NEXT_PUBLIC_APP_URL;
 
 export async function signInWithEmail(formData: FormData) {
   const supabase = await createServerSupabaseClient();
@@ -27,7 +30,10 @@ export async function signUpWithEmail(formData: FormData) {
   const { error } = await supabase.auth.signUp({
     email,
     password,
-    options: { data: { full_name: name } },
+    options: {
+      data: { full_name: name },
+      emailRedirectTo: `${appUrl}/auth/callback`,
+    },
   });
 
   if (error) {
@@ -39,7 +45,7 @@ export async function signUpWithEmail(formData: FormData) {
 
 export async function signInWithGithub() {
   const supabase = await createServerSupabaseClient();
-  const origin = (await headers()).get("origin");
+  const origin = (await headers()).get("origin") ?? appUrl;
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "github",
@@ -55,7 +61,7 @@ export async function signInWithGithub() {
 
 export async function signInWithGoogle() {
   const supabase = await createServerSupabaseClient();
-  const origin = (await headers()).get("origin");
+  const origin = (await headers()).get("origin") ?? appUrl;
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
