@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { checkRateLimit, addSecurityHeaders } from "@/lib/security";
 import { encrypt, decrypt, encryptJson, decryptJson } from "@/lib/encryption";
+import type { NextRequest, NextResponse } from "next/server";
 
 interface MockHeaders {
   get(name: string): string | null;
@@ -41,7 +42,7 @@ function mockResponse(): MockResponse {
 describe("checkRateLimit", () => {
   it("allows first request from an IP", () => {
     const req = mockRequest({ "x-forwarded-for": "192.168.1.1" });
-    const result = checkRateLimit(req as MockRequest);
+    const result = checkRateLimit(req as unknown as NextRequest);
     expect(result.blocked).toBe(false);
     expect(result.remaining).toBe(29);
   });
@@ -51,11 +52,11 @@ describe("checkRateLimit", () => {
     const req = mockRequest({ "x-forwarded-for": ip });
 
     for (let i = 0; i < 29; i++) {
-      const result = checkRateLimit(req as MockRequest);
+      const result = checkRateLimit(req as unknown as NextRequest);
       expect(result.blocked).toBe(false);
     }
 
-    const last = checkRateLimit(req as MockRequest);
+    const last = checkRateLimit(req as unknown as NextRequest);
     expect(last.blocked).toBe(false);
     expect(last.remaining).toBe(0);
   });
@@ -65,51 +66,51 @@ describe("checkRateLimit", () => {
     const req = mockRequest({ "x-forwarded-for": ip });
 
     for (let i = 0; i < 30; i++) {
-      checkRateLimit(req as MockRequest);
+      checkRateLimit(req as unknown as NextRequest);
     }
 
-    const result = checkRateLimit(req as MockRequest);
+    const result = checkRateLimit(req as unknown as NextRequest);
     expect(result.blocked).toBe(true);
     expect(result.remaining).toBe(0);
   });
 
   it("uses x-real-ip as fallback when x-forwarded-for is missing", () => {
     const req = mockRequest({ "x-real-ip": "10.0.0.99" });
-    const result = checkRateLimit(req as MockRequest);
+    const result = checkRateLimit(req as unknown as NextRequest);
     expect(result.blocked).toBe(false);
   });
 
   it("uses unknown when no IP headers are present", () => {
     const req = mockRequest({});
-    const result = checkRateLimit(req as MockRequest);
+    const result = checkRateLimit(req as unknown as NextRequest);
     expect(result.blocked).toBe(false);
   });
 });
 
 describe("addSecurityHeaders", () => {
   it("adds X-Content-Type-Options header", () => {
-    const res = addSecurityHeaders(mockResponse() as unknown as MockResponse);
+    const res = addSecurityHeaders(mockResponse() as unknown as NextResponse);
     expect(res.headers.get("X-Content-Type-Options")).toBe("nosniff");
   });
 
   it("adds X-Frame-Options header", () => {
-    const res = addSecurityHeaders(mockResponse() as unknown as MockResponse);
+    const res = addSecurityHeaders(mockResponse() as unknown as NextResponse);
     expect(res.headers.get("X-Frame-Options")).toBe("DENY");
   });
 
   it("adds X-XSS-Protection header", () => {
-    const res = addSecurityHeaders(mockResponse() as unknown as MockResponse);
+    const res = addSecurityHeaders(mockResponse() as unknown as NextResponse);
     expect(res.headers.get("X-XSS-Protection")).toBe("1; mode=block");
   });
 
   it("adds Referrer-Policy header", () => {
-    const res = addSecurityHeaders(mockResponse() as unknown as MockResponse);
+    const res = addSecurityHeaders(mockResponse() as unknown as NextResponse);
     expect(res.headers.get("Referrer-Policy")).toBe("strict-origin-when-cross-origin");
   });
 
   it("returns the same response instance", () => {
     const res = mockResponse();
-    const returned = addSecurityHeaders(res as unknown as MockResponse);
+    const returned = addSecurityHeaders(res as unknown as NextResponse);
     expect(returned).toBe(res);
   });
 });

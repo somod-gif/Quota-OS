@@ -116,7 +116,10 @@ describe("signUpWithEmail", () => {
     expect(mockSignUp).toHaveBeenCalledWith({
       email: "user@test.com",
       password: "securePass1",
-      options: { data: { full_name: "Alice" } },
+      options: {
+        data: { full_name: "Alice" },
+        emailRedirectTo: "http://localhost:3000/auth/callback",
+      },
     });
   });
 });
