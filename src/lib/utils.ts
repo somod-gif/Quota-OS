@@ -37,8 +37,16 @@ export function slugify(text: string): string {
 
 export function generateApiKey(): { key: string; prefix: string; hash: string; lastFour: string } {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  const prefix = "qos_" + Array.from({ length: 8 }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
-  const secret = Array.from({ length: 32 }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
+  const randomString = (length: number) => {
+    const bytes = crypto.randomBytes(length);
+    let out = "";
+    for (let i = 0; i < length; i++) {
+      out += chars[bytes[i] % chars.length];
+    }
+    return out;
+  };
+  const prefix = "qos_" + randomString(8);
+  const secret = randomString(32);
   const key = `${prefix}.${secret}`;
   const lastFour = secret.slice(-4);
   const hash = crypto.createHash("sha256").update(key).digest("hex");

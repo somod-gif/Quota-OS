@@ -21,3 +21,20 @@ export const env = envSchema.parse({
   DATABASE_URL: process.env.DATABASE_URL || undefined,
   PROVIDER_ENCRYPTION_KEY: process.env.PROVIDER_ENCRYPTION_KEY || undefined,
 });
+
+if (process.env.NODE_ENV === "production") {
+  const required: Record<string, string | undefined> = {
+    NEXT_PUBLIC_APP_URL: env.NEXT_PUBLIC_APP_URL,
+    NEXT_PUBLIC_SUPABASE_URL: env.NEXT_PUBLIC_SUPABASE_URL,
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    SUPABASE_SERVICE_ROLE_KEY: env.SUPABASE_SERVICE_ROLE_KEY,
+    DATABASE_URL: env.DATABASE_URL,
+    PROVIDER_ENCRYPTION_KEY: env.PROVIDER_ENCRYPTION_KEY,
+  };
+
+  for (const [name, value] of Object.entries(required)) {
+    if (!value || value.startsWith("placeholder")) {
+      throw new Error(`Missing required environment variable: ${name}`);
+    }
+  }
+}

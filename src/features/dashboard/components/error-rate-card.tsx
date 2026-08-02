@@ -57,11 +57,7 @@ export function ErrorRateCard({ summary }: ErrorRateCardProps) {
         </div>
         <div className="mt-3 space-y-1.5 text-xs text-muted-foreground">
           <div className="flex justify-between">
-            <span>4xx errors</span>
-            <span className="font-medium text-amber-500">{summary.totalErrors}</span>
-          </div>
-          <div className="flex justify-between">
-            <span>5xx errors</span>
+            <span>Total errors</span>
             <span className="font-medium text-red-500">{summary.totalErrors}</span>
           </div>
           <div className="flex justify-between">

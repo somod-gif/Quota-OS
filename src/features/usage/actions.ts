@@ -91,7 +91,7 @@ export async function getUsageOverview(workspaceId: string) {
     .where(eq(projects.workspace_id, workspaceId));
 
   if (workspaceProjects.length === 0) {
-    return { summary: null as unknown as UsageSummary, series: [] as UsageSeries[] };
+    return { summary: null, series: [] };
   }
 
   const projectIds = workspaceProjects.map((p) => p.id);

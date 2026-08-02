@@ -103,7 +103,7 @@ export async function updateWorkspace(workspaceId: string, data: UpdateWorkspace
     const existing = await db
       .select({ id: workspaces.id })
       .from(workspaces)
-      .where(and(eq(workspaces.slug, slug), eq(workspaces.id, workspaceId)))
+      .where(eq(workspaces.slug, slug))
       .limit(1);
 
     if (existing.length > 0 && existing[0].id !== workspaceId) {

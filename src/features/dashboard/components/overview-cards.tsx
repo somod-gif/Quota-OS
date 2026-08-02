@@ -7,32 +7,43 @@ import { Activity, AlertTriangle, Gauge, Shield } from "lucide-react"
 import type { UsageSummary } from "@/types"
 
 interface OverviewCardsProps {
-  summary: UsageSummary
+  summary: UsageSummary | null
+}
+
+const EMPTY_SUMMARY: UsageSummary = {
+  totalRequests: 0,
+  totalBlocked: 0,
+  totalRateLimited: 0,
+  totalCached: 0,
+  totalErrors: 0,
+  avgLatency: 0,
+  errorRate: 0,
 }
 
 export function OverviewCards({ summary }: OverviewCardsProps) {
+  const s = summary ?? EMPTY_SUMMARY
   const cards = [
     {
       title: "Total Requests",
-      value: summary.totalRequests.toLocaleString(),
+      value: s.totalRequests.toLocaleString(),
       icon: Activity,
-      change: "+12%",
+      change: "Last 7 days",
     },
     {
       title: "Error Rate",
-      value: `${summary.errorRate}%`,
+      value: `${s.errorRate}%`,
       icon: AlertTriangle,
-      change: `${summary.totalErrors} errors`,
+      change: `${s.totalErrors} errors`,
     },
     {
       title: "Avg Latency",
-      value: `${summary.avgLatency}ms`,
+      value: `${s.avgLatency}ms`,
       icon: Gauge,
       change: "Last 7 days",
     },
     {
       title: "Rate Limited",
-      value: summary.totalRateLimited.toLocaleString(),
+      value: s.totalRateLimited.toLocaleString(),
       icon: Shield,
       change: "Last 7 days",
     },
