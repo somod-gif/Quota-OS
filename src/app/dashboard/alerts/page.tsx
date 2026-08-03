@@ -16,8 +16,8 @@ export default async function AlertsPage() {
   const workspaceId = activeId && workspaces.some((w) => w.id === activeId) ? activeId : workspaces[0].id;
   const workspaceName = workspaces.find((w) => w.id === workspaceId)?.name ?? "Unknown";
 
-  const [alerts, projects] = await Promise.all([
-    getAlerts(workspaceId),
+  const [alertsResult, projects] = await Promise.all([
+    getAlerts(workspaceId, { limit: 20 }),
     getProjects(workspaceId),
   ]);
 
@@ -29,7 +29,7 @@ export default async function AlertsPage() {
           <p className="text-sm text-muted-foreground">Configure alerts and notifications for {workspaceName}</p>
         </div>
       </div>
-      <AlertsList alerts={alerts} projects={projects} />
+      <AlertsList workspaceId={workspaceId} alerts={alertsResult.data} hasMore={alertsResult.hasMore} projects={projects} />
     </div>
   );
 }

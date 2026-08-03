@@ -9,6 +9,8 @@ import { slugify } from "@/lib/utils";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import crypto from "crypto";
+import { env } from "@/config/env";
+import { sendEmail, buildInvitationEmail } from "@/lib/email";
 import type { WorkspaceRole, InsertWorkspace, UpdateWorkspace, CreateInvitation, Invitation } from "@/types";
 
 export async function createWorkspace(data: InsertWorkspace) {
@@ -289,6 +291,16 @@ export async function createInvitation(workspaceId: string, data: CreateInvitati
     return { error: "An active invitation already exists for this email" };
   }
 
+  const [workspace] = await db
+    .select({ name: workspaces.name })
+    .from(workspaces)
+    .where(eq(workspaces.id, workspaceId))
+    .limit(1);
+
+  if (!workspace) {
+    return { error: "Workspace not found" };
+  }
+
   const token = crypto.randomBytes(32).toString("hex");
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
@@ -305,6 +317,20 @@ export async function createInvitation(workspaceId: string, data: CreateInvitati
     .returning();
 
   revalidatePath("/dashboard/settings");
+
+  const inviteUrl = `${env.NEXT_PUBLIC_APP_URL}/auth/accept-invitation?token=${invitation.token}`;
+
+  const emailResult = await sendEmail({
+    to: invitation.email,
+    subject: `You're invited to join ${workspace.name}`,
+    html: buildInvitationEmail({
+      workspaceName: workspace.name,
+      inviterName: user.user_metadata?.full_name ?? "A team member",
+      acceptUrl: inviteUrl,
+    }),
+    text: `You've been invited to join ${workspace.name} on QuotaOS. Accept the invitation here: ${inviteUrl}`,
+  });
+
   return {
     data: {
       id: invitation.id,
@@ -318,6 +344,7 @@ export async function createInvitation(workspaceId: string, data: CreateInvitati
       created_at: invitation.created_at.toISOString(),
       updated_at: invitation.updated_at.toISOString(),
     },
+    email: emailResult,
   };
 }
 
@@ -364,7 +391,12 @@ export async function cancelInvitation(workspaceId: string, invitationId: string
 }
 
 export async function acceptInvitation(token: string) {
-  const user = await requireAuth();
+  let user;
+  try {
+    user = await requireAuth();
+  } catch {
+    return { error: "You must be signed in to accept an invitation. Sign in and open the link again." };
+  }
 
   const [invitation] = await db
     .select()

@@ -185,3 +185,40 @@ export const usage_records = pgTable("usage_records", {
   avg_latency_ms: integer("avg_latency_ms").notNull().default(0),
   p99_latency_ms: integer("p99_latency_ms").notNull().default(0),
 });
+
+export const webhook_endpoints = pgTable("webhook_endpoints", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  workspace_id: uuid("workspace_id")
+    .notNull()
+    .references(() => workspaces.id, { onDelete: "cascade" }),
+  name: varchar("name", { length: 255 }).notNull(),
+  url: text("url").notNull(),
+  secret: text("secret"),
+  active: boolean("active").notNull().default(true),
+  created_at: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+  updated_at: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
+export const alert_deliveries = pgTable(
+  "alert_deliveries",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    alert_id: uuid("alert_id")
+      .notNull()
+      .references(() => alerts.id, { onDelete: "cascade" }),
+    channel: varchar("channel", { length: 20 }).notNull(),
+    payload: jsonb("payload").notNull(),
+    status: varchar("status", { length: 20 }).notNull().default("pending"),
+    attempts: integer("attempts").notNull().default(0),
+    next_attempt_at: timestamp("next_attempt_at", { withTimezone: true }).notNull().defaultNow(),
+    last_error: text("last_error"),
+    created_at: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updated_at: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => ({
+    nextAttemptIdx: uniqueIndex("alert_deliveries_next_attempt_idx").on(
+      table.status,
+      table.next_attempt_at,
+    ),
+  }),
+);

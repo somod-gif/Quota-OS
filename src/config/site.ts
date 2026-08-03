@@ -21,6 +21,7 @@ export const dashboardConfig = {
     { title: "Logs", href: "/dashboard/logs", icon: "ScrollText" },
     { title: "Rate Limits", href: "/dashboard/rate-limits", icon: "Gauge" },
     { title: "Alerts", href: "/dashboard/alerts", icon: "BellRing" },
+    { title: "Profile", href: "/dashboard/profile", icon: "CircleUser" },
     { title: "Settings", href: "/dashboard/settings", icon: "Settings" },
   ] as const,
 };

@@ -57,7 +57,7 @@ describe("signInWithEmail", () => {
     mockSignInWithPassword.mockResolvedValue({ error: null });
 
     await signInWithEmail(formData);
-    expect(redirect).toHaveBeenCalledWith("/");
+    expect(redirect).toHaveBeenCalledWith("/dashboard");
   });
 });
 
@@ -97,10 +97,28 @@ describe("signUpWithEmail", () => {
     formData.set("password", "strongPassword123");
     formData.set("name", "Test User");
 
-    mockSignUp.mockResolvedValue({ error: null });
+    mockSignUp.mockResolvedValue({
+      error: null,
+      data: { session: { access_token: "token" } },
+    });
 
     const result = await signUpWithEmail(formData);
-    expect(result).toEqual({ success: true });
+    expect(result).toEqual({ success: true, requiresConfirmation: false });
+  });
+
+  it("reports requiresConfirmation when no session is returned", async () => {
+    const formData = new FormData();
+    formData.set("email", "confirm@test.com");
+    formData.set("password", "strongPassword123");
+    formData.set("name", "Test User");
+
+    mockSignUp.mockResolvedValue({
+      error: null,
+      data: { session: null },
+    });
+
+    const result = await signUpWithEmail(formData);
+    expect(result).toEqual({ success: true, requiresConfirmation: true });
   });
 
   it("passes name as full_name in user metadata", async () => {
@@ -109,7 +127,10 @@ describe("signUpWithEmail", () => {
     formData.set("password", "securePass1");
     formData.set("name", "Alice");
 
-    mockSignUp.mockResolvedValue({ error: null });
+    mockSignUp.mockResolvedValue({
+      error: null,
+      data: { session: { access_token: "token" } },
+    });
 
     await signUpWithEmail(formData);
 

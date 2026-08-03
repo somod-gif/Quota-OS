@@ -39,8 +39,14 @@ export function SignUpForm() {
       return;
     }
 
-    setSuccess(true);
-    setLoading(false);
+    if (result?.requiresConfirmation) {
+      setSuccess(true);
+      setLoading(false);
+      return;
+    }
+
+    router.push("/dashboard");
+    router.refresh();
   }
 
   if (success) {

@@ -25,7 +25,10 @@ function serializeAlert(a: typeof alerts.$inferSelect): Alert {
   };
 }
 
-export async function getAlerts(workspaceId: string) {
+export async function getAlerts(
+  workspaceId: string,
+  options?: { limit?: number; offset?: number },
+) {
   const user = await requireAuth();
   await requireWorkspaceAccess(workspaceId, user.id);
 
@@ -34,17 +37,25 @@ export async function getAlerts(workspaceId: string) {
     .from(projects)
     .where(eq(projects.workspace_id, workspaceId));
 
-  if (workspaceProjects.length === 0) return [];
+  if (workspaceProjects.length === 0) return { data: [] as Alert[], hasMore: false };
 
   const projectIds = workspaceProjects.map((p) => p.id);
+
+  const limit = Math.min(options?.limit ?? 50, 100);
+  const offset = options?.offset ?? 0;
 
   const result = await db
     .select()
     .from(alerts)
     .where(inArray(alerts.project_id, projectIds))
-    .orderBy(alerts.created_at);
+    .orderBy(alerts.created_at)
+    .limit(limit + 1)
+    .offset(offset);
 
-  return result.map(serializeAlert);
+  const hasMore = result.length > limit;
+  const rows = result.slice(0, limit);
+
+  return { data: rows.map(serializeAlert), hasMore };
 }
 
 export async function createAlert(

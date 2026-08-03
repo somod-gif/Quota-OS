@@ -9,6 +9,8 @@ const envSchema = z.object({
   UPSTASH_REDIS_REST_TOKEN: z.string().optional(),
   DATABASE_URL: z.string().url().default("postgres://placeholder:placeholder@localhost:5432/quotaos"),
   PROVIDER_ENCRYPTION_KEY: z.string().min(32).default("a".repeat(32)),
+  CRON_SECRET: z.string().optional(),
+  RESEND_API_KEY: z.string().optional(),
 });
 
 export const env = envSchema.parse({
@@ -20,6 +22,8 @@ export const env = envSchema.parse({
   UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN || undefined,
   DATABASE_URL: process.env.DATABASE_URL || undefined,
   PROVIDER_ENCRYPTION_KEY: process.env.PROVIDER_ENCRYPTION_KEY || undefined,
+  CRON_SECRET: process.env.CRON_SECRET || undefined,
+  RESEND_API_KEY: process.env.RESEND_API_KEY || undefined,
 });
 
 if (process.env.NODE_ENV === "production") {

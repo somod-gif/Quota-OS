@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/tabs";
 import { updateWorkspace } from "@/features/workspace/actions";
 import { MembersList } from "@/features/workspace/components/members-list";
-import { SaveIcon, CreditCardIcon } from "lucide-react";
+import { SaveIcon } from "lucide-react";
 import type { Workspace, WorkspaceMember, WorkspaceRole, Invitation } from "@/types";
 
 interface WorkspaceSettingsClientProps {
@@ -29,6 +29,7 @@ interface WorkspaceSettingsClientProps {
 export function WorkspaceSettingsClient({
   workspace,
   members: initialMembers,
+  invitations: initialInvitations,
   currentUserId,
 }: WorkspaceSettingsClientProps) {
   const router = useRouter();
@@ -54,11 +55,11 @@ export function WorkspaceSettingsClient({
   }
 
   return (
-    <Tabs defaultValue="general">
-      <TabsList>
-        <TabsTrigger value="general">General</TabsTrigger>
-        <TabsTrigger value="team">Team</TabsTrigger>
-        <TabsTrigger value="billing">Billing</TabsTrigger>
+    <Tabs defaultValue="general" orientation="vertical">
+      <TabsList className="w-fit min-w-40 h-fit flex-col items-stretch">
+        <TabsTrigger value="general" className="justify-start px-4">General</TabsTrigger>
+        <TabsTrigger value="team" className="justify-start px-4">Team</TabsTrigger>
+        <TabsTrigger value="billing" className="justify-start px-4">Billing</TabsTrigger>
       </TabsList>
 
       <TabsContent value="general" className="mt-4 space-y-4">
@@ -126,6 +127,7 @@ export function WorkspaceSettingsClient({
             <MembersList
               workspaceId={workspace.id}
               members={initialMembers}
+              invitations={initialInvitations}
               currentUserId={currentUserId}
               currentUserRole={workspace.role}
             />
@@ -143,7 +145,7 @@ export function WorkspaceSettingsClient({
             <div className="flex items-center justify-between rounded-lg border p-4">
               <div>
                 <p className="text-sm font-medium">Current Plan</p>
-                <p className="text-xs text-muted-foreground">You are on the Pro plan</p>
+                <p className="text-xs text-muted-foreground">Starter — free forever</p>
               </div>
               <div className="rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-500">
                 Active
@@ -156,30 +158,39 @@ export function WorkspaceSettingsClient({
               </div>
               <div>
                 <p className="text-muted-foreground">API Keys</p>
-                <p className="font-medium">Unlimited</p>
+                <p className="font-medium">5</p>
               </div>
               <div>
-                <p className="text-muted-foreground">Team Members</p>
-                <p className="font-medium">Up to 10</p>
+                <p className="text-muted-foreground">Projects</p>
+                <p className="font-medium">Up to 3</p>
               </div>
               <div>
-                <p className="text-muted-foreground">Support</p>
-                <p className="font-medium">Priority</p>
+                <p className="text-muted-foreground">Providers</p>
+                <p className="font-medium">Up to 5</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <p className="text-muted-foreground">Rate Limiting</p>
+                <p className="font-medium">Basic</p>
+              </div>
+              <div>
+                <p className="text-muted-foreground">Request Logs</p>
+                <p className="font-medium">7 days</p>
               </div>
             </div>
             <Separator />
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium">Payment Method</p>
-                <p className="text-xs text-muted-foreground">No payment method added</p>
+            <div>
+              <p className="text-sm font-medium">Upgrade your plan</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Unlock more projects, requests, and team collaboration. Online payments are coming soon —
+                upgrades will be available shortly.
+              </p>
+              <div className="mt-3 flex justify-end">
+                <Button variant="outline" disabled>
+                  Upgrade to Pro
+                </Button>
               </div>
-              <Button variant="outline" size="sm">
-                <CreditCardIcon className="mr-2 h-3.5 w-3.5" />
-                Add
-              </Button>
-            </div>
-            <div className="flex justify-end">
-              <Button variant="outline">Manage Subscription</Button>
             </div>
           </CardContent>
         </Card>

@@ -1,0 +1,16 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/retention",
+      "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/cron/alerts/evaluate",
+      "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/cron/alerts/deliver",
+      "schedule": "*/2 * * * *"
+    }
+  ]
+}

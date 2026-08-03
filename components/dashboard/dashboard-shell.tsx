@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
 import { Sidebar } from "./sidebar";
 import { Header } from "./header";
 import { CreateWorkspaceDialog } from "@/features/workspace/components/create-workspace-dialog";
@@ -19,6 +20,7 @@ interface DashboardShellProps {
 export function DashboardShell({ children, workspaces }: DashboardShellProps) {
   const router = useRouter();
   const [showCreateWorkspace, setShowCreateWorkspace] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [activeWorkspaceId, setActiveWorkspaceId] = useState<string>(workspaces[0]?.id ?? "");
 
   const activeWorkspace = workspaces.find((w) => w.id === activeWorkspaceId) ?? workspaces[0] ?? null;
@@ -34,8 +36,8 @@ export function DashboardShell({ children, workspaces }: DashboardShellProps) {
 
   return (
     <div className="flex min-h-screen">
-      <Sidebar />
-      <div className="flex flex-1 flex-col md:pl-60">
+      <Sidebar collapsed={sidebarCollapsed} onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} />
+      <div className={cn("flex flex-1 flex-col", sidebarCollapsed ? "md:pl-16" : "md:pl-60")}>
         <Header
           workspaces={workspaces}
           activeWorkspace={activeWorkspace}

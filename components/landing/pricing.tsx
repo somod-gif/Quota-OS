@@ -8,13 +8,17 @@ const plans = [
   {
     name: "Starter",
     price: "$0",
-    description: "For individual developers and small projects",
+    period: "",
+    description: "Perfect for personal projects and MVPs.",
     features: [
-      "Up to 3 projects",
-      "10,000 requests/day",
-      "Basic rate limiting",
-      "7-day log retention",
-      "Basic analytics",
+      "Up to 3 Projects",
+      "100,000 Gateway Requests / month",
+      "5 API Keys",
+      "5 Provider Connections",
+      "Basic Rate Limiting",
+      "7-Day Request Logs",
+      "Basic Analytics",
+      "Community Support",
     ],
     cta: "Get Started Free",
     href: "/auth/register",
@@ -22,34 +26,63 @@ const plans = [
   },
   {
     name: "Pro",
-    price: "$29",
-    description: "For growing teams and production apps",
+    price: "$30",
+    period: "/month",
+    description: "For startups building production applications.",
     features: [
-      "Unlimited projects",
-      "1,000,000 requests/day",
-      "Advanced rate limiting",
-      "30-day log retention",
-      "Full analytics & charts",
-      "Custom alerts",
-      "Team members (up to 5)",
+      "Unlimited Projects",
+      "10 Million Gateway Requests / month",
+      "Unlimited API Keys",
+      "Unlimited Provider Connections",
+      "Advanced Rate Limiting",
+      "90-Day Request Logs",
+      "Real-Time Analytics",
+      "Provider Failover",
+      "Webhooks",
+      "Team Collaboration (Up to 10 Members)",
+      "Priority Support",
     ],
     cta: "Start Free Trial",
     href: "/auth/register",
     featured: true,
   },
   {
-    name: "Enterprise",
-    price: "$99",
-    description: "For large organizations with advanced needs",
+    name: "Business",
+    price: "$90",
+    period: "/month",
+    description: "For growing companies running mission-critical workloads.",
     features: [
       "Everything in Pro",
-      "Unlimited requests",
-      "90-day log retention",
-      "SSO & SAML",
-      "Audit logs",
-      "Dedicated support",
-      "Custom integrations",
-      "SLA guarantee",
+      "100 Million Gateway Requests / month",
+      "Multi-Workspace Support",
+      "Role-Based Access Control (RBAC)",
+      "Audit Logs",
+      "Custom Quotas & Policies",
+      "API Usage Insights",
+      "Single Sign-On (SSO)",
+      "Advanced Alerts",
+      "Premium Support",
+    ],
+    cta: "Contact Sales",
+    href: "/contact",
+    featured: false,
+  },
+  {
+    name: "Enterprise",
+    price: "Custom",
+    period: "",
+    description: "For organizations operating at enterprise scale.",
+    features: [
+      "Unlimited Requests",
+      "Unlimited Workspaces",
+      "Unlimited Team Members",
+      "Dedicated Infrastructure",
+      "Bring Your Own Cloud (BYOC)",
+      "Custom Integrations",
+      "Enterprise SLA",
+      "Dedicated Customer Success Manager",
+      "24/7 Priority Support",
+      "Compliance & Security Reviews",
     ],
     cta: "Contact Sales",
     href: "/contact",
@@ -66,11 +99,11 @@ export function Pricing() {
             Simple, transparent pricing
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
-            Start for free. Scale as you grow. No hidden fees.
+            Start for free. Scale as your business grows. No hidden fees.
           </p>
         </div>
 
-        <div className="mt-16 grid gap-8 lg:grid-cols-3">
+        <div className="mt-16 grid gap-8 md:grid-cols-2 xl:grid-cols-4">
           {plans.map((plan) => (
             <div
               key={plan.name}
@@ -92,15 +125,15 @@ export function Pricing() {
                 <h3 className="text-lg font-semibold">{plan.name}</h3>
                 <div className="mt-2 flex items-baseline gap-1">
                   <span className="text-4xl font-bold">{plan.price}</span>
-                  {plan.price !== "$0" && <span className="text-sm text-muted-foreground">/month</span>}
+                  {plan.period && <span className="text-sm text-muted-foreground">{plan.period}</span>}
                 </div>
                 <p className="mt-2 text-sm text-muted-foreground">{plan.description}</p>
               </div>
 
               <ul className="mb-8 flex-1 space-y-3">
                 {plan.features.map((feature) => (
-                  <li key={feature} className="flex items-center gap-3 text-sm">
-                    <Check className="h-4 w-4 text-primary shrink-0" />
+                  <li key={feature} className="flex items-start gap-3 text-sm">
+                    <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
                     <span>{feature}</span>
                   </li>
                 ))}

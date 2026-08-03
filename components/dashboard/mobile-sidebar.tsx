@@ -18,6 +18,7 @@ import {
   ScrollText,
   Gauge,
   BellRing,
+  CircleUser,
   Settings,
   type LucideIcon,
 } from "lucide-react";
@@ -32,6 +33,7 @@ const iconMap: Record<string, LucideIcon> = {
   ScrollText,
   Gauge,
   BellRing,
+  CircleUser,
   Settings,
 };
 

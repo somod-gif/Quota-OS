@@ -18,7 +18,7 @@ export async function signInWithEmail(formData: FormData) {
     return { error: error.message };
   }
 
-  redirect("/");
+  redirect("/dashboard");
 }
 
 export async function signUpWithEmail(formData: FormData) {
@@ -27,7 +27,7 @@ export async function signUpWithEmail(formData: FormData) {
   const password = formData.get("password") as string;
   const name = formData.get("name") as string;
 
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
@@ -40,7 +40,8 @@ export async function signUpWithEmail(formData: FormData) {
     return { error: error.message };
   }
 
-  return { success: true };
+  const requiresConfirmation = !data.session;
+  return { success: true, requiresConfirmation };
 }
 
 export async function signInWithGithub() {

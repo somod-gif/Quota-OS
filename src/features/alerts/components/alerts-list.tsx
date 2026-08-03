@@ -17,14 +17,16 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
-import { PlusIcon, Trash2Icon } from "lucide-react"
+import { PlusIcon, Trash2Icon, Loader2Icon } from "lucide-react"
 import { toast } from "sonner"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
-import { createAlert, updateAlert, deleteAlert } from "@/features/alerts/actions"
+import { createAlert, updateAlert, deleteAlert, getAlerts as getAlertsPage } from "@/features/alerts/actions"
 import type { Alert, Project } from "@/types"
 
 interface AlertsListProps {
+  workspaceId: string
   alerts: Alert[]
+  hasMore?: boolean
   projects: Project[]
 }
 
@@ -44,9 +46,12 @@ const conditionLabel: Record<string, string> = {
   eq: "=",
 }
 
-export function AlertsList({ alerts, projects }: AlertsListProps) {
+export function AlertsList({ workspaceId, alerts: initialAlerts, hasMore: initialHasMore, projects }: AlertsListProps) {
   const router = useRouter()
   const [open, setOpen] = useState(false)
+  const [alerts, setAlerts] = useState(initialAlerts)
+  const [hasMore, setHasMore] = useState(initialHasMore ?? false)
+  const [loadingMore, setLoadingMore] = useState(false)
   const [name, setName] = useState("")
   const [projectId, setProjectId] = useState("")
   const [metric, setMetric] = useState("error_rate")
@@ -98,8 +103,17 @@ export function AlertsList({ alerts, projects }: AlertsListProps) {
   async function handleDelete(alertId: string) {
     await deleteAlert(alertId)
     setDeleteTarget(null)
+    setAlerts((prev) => prev.filter((a) => a.id !== alertId))
     toast.success("Alert deleted")
     router.refresh()
+  }
+
+  async function handleLoadMore() {
+    setLoadingMore(true)
+    const result = await getAlertsPage(workspaceId, { limit: 20, offset: alerts.length })
+    setAlerts((prev) => [...prev, ...result.data.filter((a) => !prev.some((p) => p.id === a.id))])
+    setHasMore(result.hasMore)
+    setLoadingMore(false)
   }
 
   function formatWindow(ms: number): string {
@@ -261,6 +275,17 @@ export function AlertsList({ alerts, projects }: AlertsListProps) {
         confirmLabel="Delete"
         onConfirm={() => { if (deleteTarget) handleDelete(deleteTarget) }}
       />
+
+      {hasMore && (
+        <div className="flex justify-center pt-2">
+          <Button variant="outline" onClick={handleLoadMore} disabled={loadingMore}>
+            {loadingMore ? (
+              <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
+            ) : null}
+            {loadingMore ? "Loading..." : "Load more"}
+          </Button>
+        </div>
+      )}
     </div>
   )
 }

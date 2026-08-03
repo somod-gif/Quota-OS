@@ -1,10 +1,8 @@
 "use client";
 
-import { useTheme } from "next-themes";
-import { useMounted } from "@/hooks/use-mounted";
 import { MobileSidebar } from "./mobile-sidebar";
 import { Button } from "@/components/ui/button";
-import { Sun, Moon, LogOut } from "lucide-react";
+import { LogOut } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -32,8 +30,6 @@ export function Header({
   onSwitchWorkspace,
   onCreateWorkspace,
 }: HeaderProps) {
-  const { theme, setTheme } = useTheme();
-  const mounted = useMounted();
 
   return (
     <header className="sticky top-0 z-20 flex h-14 items-center gap-4 border-b border-border bg-background/95 px-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 md:px-6">
@@ -51,17 +47,6 @@ export function Header({
       <div className="flex-1" />
 
       <div className="flex items-center gap-2">
-        {mounted && (
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="h-9 w-9"
-            aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-          >
-            {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-          </Button>
-        )}
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -72,6 +57,9 @@ export function Header({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuItem asChild>
+              <a href="/dashboard/profile" className="cursor-pointer">Profile</a>
+            </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <a href="/dashboard/settings" className="cursor-pointer">Settings</a>
             </DropdownMenuItem>
